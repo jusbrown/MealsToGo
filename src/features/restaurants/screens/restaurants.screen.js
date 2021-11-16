@@ -1,25 +1,41 @@
-import React from "react";
-import { Searchbar } from "react-native-paper";
+import React, { useContext } from "react";
+import { Colors } from "react-native-paper";
 import { RestaurantInfoCard } from "../components/restaurant-info-card.component";
-import { RestaurantList, SearchContainer } from "./restaurant.styles";
+import {
+  RestaurantList,
+  SearchContainer,
+  LoadingView,
+  Spinner,
+} from "./restaurant.styles";
 import { Spacer } from "../../../components/spacer/spacer.component";
 import { SafeArea } from "../../../components/utility/safe-area.component";
+import { RestaurantsContext } from "../../../services/restaurant/restaurants.context";
+import { Search } from "../components/search.component";
+import { useEffect } from "react/cjs/react.development";
 
-const numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+export const RestaurantsScreen = () => {
+  const { restaurants, isLoading, error } = useContext(RestaurantsContext);
+  console.log(`error: ${error}`);
 
-export const RestaurantsScreen = () => (
-  <SafeArea>
-    <SearchContainer>
-      <Searchbar />
-    </SearchContainer>
-    <RestaurantList
-      data={numbers}
-      renderItem={(item) => (
-        <Spacer position="bottom" size="large">
-          <RestaurantInfoCard />
-        </Spacer>
+  return (
+    <SafeArea>
+      {isLoading && (
+        <LoadingView>
+          <Spinner size={50} animating={true} color={Colors.blue300} />
+        </LoadingView>
       )}
-      keyExtractor={(item) => item}
-    />
-  </SafeArea>
-);
+      <Search />
+      <RestaurantList
+        data={restaurants}
+        renderItem={({ item }) => {
+          return (
+            <Spacer position="bottom" size="large">
+              <RestaurantInfoCard restaurant={item} />
+            </Spacer>
+          );
+        }}
+        keyExtractor={(item) => item.name}
+      />
+    </SafeArea>
+  );
+};
