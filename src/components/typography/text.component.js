@@ -24,6 +24,11 @@ const caption = (theme) => `
     font-weight: ${theme.fontWeights.bold};
 `;
 
+const header = (theme) => `
+    font-size: ${theme.fontSizes.header};
+    font-weight: ${theme.fontWeights.bold};
+`;
+
 const error = (theme) => `
     color: ${theme.colors.text.error};
 `;
@@ -38,6 +43,7 @@ const variants = {
   caption,
   error,
   hint,
+  header,
 };
 
 export const Text = styled.Text`

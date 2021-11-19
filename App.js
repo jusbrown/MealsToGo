@@ -1,9 +1,7 @@
 import { StatusBar as ExpoStatusBar } from "expo-status-bar";
 import React from "react";
 import { ThemeProvider } from "styled-components/native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
+import * as firebase from "firebase";
 
 import {
   useFonts as useOswald,
@@ -11,31 +9,24 @@ import {
 } from "@expo-google-fonts/oswald";
 import { useFonts as useLato, Lato_400Regular } from "@expo-google-fonts/lato";
 
-import { RestaurantsScreen } from "./src/features/restaurants/screens/restaurants.screen";
-import { MapScreen } from "./src/features/map/screens/map.screen";
-import { SettingsScreen } from "./src/features/settings/screens/settings.screen";
 import { theme } from "./src/infrastructure/theme";
-import { RestaurantsContextProvider } from "./src/services/restaurant/restaurants.context";
-import { LocationContextProvider } from "./src/services/location/location.context";
+import { Navigation } from "./src/infrastructure/navigation";
 
-const Tab = createBottomTabNavigator();
+import { AuthenticationContextProvider } from "./src/services/authentication/authentication.context";
 
-const TAB_ICON = {
-  Resturants: "md-restaurant",
-  Map: "md-map",
-  Settings: "md-settings",
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyAR8HR1VIGbWrBYZcUBh5VXDPTSAwpDubA",
+  authDomain: "meals-to-go-baa68.firebaseapp.com",
+  projectId: "meals-to-go-baa68",
+  storageBucket: "meals-to-go-baa68.appspot.com",
+  messagingSenderId: "549870504414",
+  appId: "1:549870504414:web:ccdfac3d8ba5d6d0ee354f",
 };
 
-const createScreenOptions = ({ route }) => {
-  const iconName = TAB_ICON[route.name];
-  return {
-    tabBarIcon: ({ size, color }) => (
-      <Ionicons name={iconName} size={size} color={color} />
-    ),
-    tabBarActiveTintColor: "tomato",
-    tabBarInactiveTintColor: "gray",
-  };
-};
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
 export default function App() {
   const [oswaldLoaded] = useOswald({
@@ -53,23 +44,9 @@ export default function App() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <LocationContextProvider>
-          <RestaurantsContextProvider>
-            <NavigationContainer>
-              <Tab.Navigator
-                screenOptions={createScreenOptions}
-                tabBarOptions={{
-                  activeTintColor: "tomato",
-                  inactiveTintColor: "gray",
-                }}
-              >
-                <Tab.Screen name="Resturants" component={RestaurantsScreen} />
-                <Tab.Screen name="Map" component={MapScreen} />
-                <Tab.Screen name="Settings" component={SettingsScreen} />
-              </Tab.Navigator>
-            </NavigationContainer>
-          </RestaurantsContextProvider>
-        </LocationContextProvider>
+        <AuthenticationContextProvider>
+          <Navigation />
+        </AuthenticationContextProvider>
       </ThemeProvider>
       <ExpoStatusBar style="auto" />
     </>
